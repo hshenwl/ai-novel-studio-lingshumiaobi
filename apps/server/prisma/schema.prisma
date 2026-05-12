@@ -1,0 +1,259 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 用户表
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects Project[]
+}
+
+// 项目表
+model Project {
+  id              String   @id @default(uuid())
+  title           String
+  description     String?
+  genre           String?
+  cover           String?
+  status          String   @default("draft") // draft, ongoing, completed, published
+  wordCount       Int      @default(0)
+  targetWordCount Int      @default(100000)
+  userId          String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  volumes        Volume[]
+  characters     Character[]
+  worldSettings  WorldSetting[]
+  organizations  Organization[]
+  professions    Profession[]
+  relationships  Relationship[]
+  foreshadows    Foreshadow[]
+  hooks          Hook[]
+  knowledge      Knowledge[]
+  tasks          Task[]
+}
+
+// 卷表
+model Volume {
+  id          String   @id @default(uuid())
+  projectId   String
+  title       String
+  outline     String?
+  order       Int      @default(1)
+  wordCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  chapters  Chapter[]
+
+  @@index([projectId])
+}
+
+// 章节表
+model Chapter {
+  id         String   @id @default(uuid())
+  volumeId   String
+  title      String
+  outline    String?
+  content    String?
+  order      Int      @default(1)
+  wordCount  Int      @default(0)
+  status     String   @default("outline") // outline, draft, revised, final
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  volume        Volume       @relation(fields: [volumeId], references: [id], onDelete: Cascade)
+  foreshadows   Foreshadow[]
+
+  @@index([volumeId])
+}
+
+// 世界设定表
+model WorldSetting {
+  id        String   @id @default(uuid())
+  projectId String
+  category  String
+  title     String
+  content   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+// 角色表
+model Character {
+  id             String   @id @default(uuid())
+  projectId      String
+  name           String
+  role           String   @default("minor") // protagonist, major, minor
+  avatar         String?
+  gender         String?
+  age            Int?
+  personality    String?
+  background     String?
+  organizationId String?
+  professionId   String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  project                Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  organization           Organization?  @relation(fields: [organizationId], references: [id])
+  profession             Profession?    @relation(fields: [professionId], references: [id])
+  relationshipsAsSource  Relationship[] @relation("SourceCharacter")
+  relationshipsAsTarget  Relationship[] @relation("TargetCharacter")
+
+  @@index([projectId])
+  @@index([organizationId])
+  @@index([professionId])
+}
+
+// 组织表
+model Organization {
+  id          String   @id @default(uuid())
+  projectId   String
+  name        String
+  description String?
+  type        String?
+  structure   String?
+  rules       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project  Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  members  Character[]
+
+  @@index([projectId])
+}
+
+// 职业表
+model Profession {
+  id           String   @id @default(uuid())
+  projectId    String
+  name         String
+  description  String?
+  abilities    String?
+  restrictions String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  characters Character[]
+
+  @@index([projectId])
+}
+
+// 角色关系表
+model Relationship {
+  id                String   @id @default(uuid())
+  projectId         String
+  sourceCharacterId String
+  targetCharacterId String
+  type              String
+  description       String?
+  evolution         String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  project          Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sourceCharacter  Character @relation("SourceCharacter", fields: [sourceCharacterId], references: [id], onDelete: Cascade)
+  targetCharacter  Character @relation("TargetCharacter", fields: [targetCharacterId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([sourceCharacterId])
+  @@index([targetCharacterId])
+}
+
+// 伏笔表
+model Foreshadow {
+  id                  String   @id @default(uuid())
+  projectId           String
+  chapterId           String?
+  title               String
+  description         String?
+  expectedResolution  String?
+  resolvedChapterId   String?
+  status              String   @default("active") // active, resolved, abandoned
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  project Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  chapter Chapter? @relation(fields: [chapterId], references: [id])
+
+  @@index([projectId])
+  @@index([chapterId])
+}
+
+// Hook表
+model Hook {
+  id        String   @id @default(uuid())
+  projectId String
+  name      String
+  type      String
+  trigger   String?
+  action    String?
+  status    String   @default("active") // active, inactive
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+// 知识库表
+model Knowledge {
+  id        String   @id @default(uuid())
+  projectId String
+  category  String
+  title     String
+  content   String?
+  tags      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+// 任务队列表
+model Task {
+  id        String   @id @default(uuid())
+  projectId String?
+  type      String
+  payload   String?
+  status    String   @default("pending") // pending, processing, completed, failed, cancelled
+  progress  Int      @default(0)
+  result    String?
+  error     String?
+  priority  String   @default("normal") // low, normal, high
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([status])
+}

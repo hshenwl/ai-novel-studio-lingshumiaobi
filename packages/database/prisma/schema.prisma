@@ -1,0 +1,92 @@
+// Prisma Schema for AI Novel Studio
+// 本地优先、云端兼容的数据模型
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./data/novel-studio.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 小说作品
+model Novel {
+  id          String   @id @default(uuid())
+  title       String
+  author      String
+  description String?
+  genre       String?
+  status      String   @default("draft") // draft, writing, completed, published
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  volumes     Volume[]
+  characters  Character[]
+  worldBuilding WorldBuilding[]
+  
+  @@map("novels")
+}
+
+// 卷
+model Volume {
+  id          String   @id @default(uuid())
+  novelId     String
+  title       String
+  description String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  novel       Novel    @relation(fields: [novelId], references: [id], onDelete: Cascade)
+  chapters    Chapter[]
+  
+  @@map("volumes")
+}
+
+// 章节
+model Chapter {
+  id          String   @id @default(uuid())
+  volumeId    String
+  title       String
+  content     String   @default("")
+  wordCount   Int      @default(0)
+  status      String   @default("draft") // draft, writing, completed, published
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  volume      Volume   @relation(fields: [volumeId], references: [id], onDelete: Cascade)
+  
+  @@map("chapters")
+}
+
+// 角色
+model Character {
+  id          String   @id @default(uuid())
+  novelId     String
+  name        String
+  description String?
+  attributes  String?  // JSON format
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  novel       Novel    @relation(fields: [novelId], references: [id], onDelete: Cascade)
+  
+  @@map("characters")
+}
+
+// 世界观设定
+model WorldBuilding {
+  id          String   @id @default(uuid())
+  novelId     String
+  category    String   // world, history, culture, magic, technology, etc.
+  title       String
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  novel       Novel    @relation(fields: [novelId], references: [id], onDelete: Cascade)
+  
+  @@map("world_building")
+}

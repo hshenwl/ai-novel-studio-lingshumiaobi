@@ -1,0 +1,59 @@
+{
+  "app": {
+    "name": "AI Novel Studio",
+    "version": "0.1.0",
+    "env": "cloud"
+  },
+  "database": {
+    "provider": "postgresql",
+    "url": "${DATABASE_URL}"
+  },
+  "storage": {
+    "provider": "s3",
+    "bucket": "${AWS_S3_BUCKET}",
+    "region": "${AWS_REGION}",
+    "accessKeyId": "${AWS_ACCESS_KEY_ID}",
+    "secretAccessKey": "${AWS_SECRET_ACCESS_KEY}"
+  },
+  "ai": {
+    "providers": [
+      {
+        "name": "openai",
+        "enabled": true,
+        "apiKey": "${OPENAI_API_KEY}",
+        "models": ["gpt-4", "gpt-3.5-turbo"]
+      },
+      {
+        "name": "anthropic",
+        "enabled": true,
+        "apiKey": "${ANTHROPIC_API_KEY}",
+        "models": ["claude-3-opus", "claude-3-sonnet"]
+      }
+    ],
+    "defaultProvider": "openai",
+    "defaultModel": "gpt-4"
+  },
+  "workflow": {
+    "maxConcurrency": 10,
+    "timeout": 120000,
+    "retryAttempts": 5
+  },
+  "server": {
+    "port": 3000,
+    "host": "0.0.0.0"
+  },
+  "auth": {
+    "enabled": true,
+    "provider": "jwt",
+    "secret": "${JWT_SECRET}",
+    "expiresIn": "7d"
+  },
+  "logging": {
+    "level": "warn",
+    "file": "./logs/app.log",
+    "remote": {
+      "enabled": true,
+      "endpoint": "${LOG_ENDPOINT}"
+    }
+  }
+}

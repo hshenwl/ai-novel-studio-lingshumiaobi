@@ -1,0 +1,40 @@
+.main-layout {
+  min-height: 100vh;
+}
+
+.main-sider {
+  background: #001529;
+  overflow: auto;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.logo {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.main-menu {
+  border-right: none;
+}
+
+.content-layout {
+  margin-left: 220px;
+}
+
+.main-content {
+  margin: 24px;
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  min-height: calc(100vh - 48px);
+}

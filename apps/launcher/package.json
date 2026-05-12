@@ -1,0 +1,18 @@
+{
+  "name": "@ai-novel/launcher",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Windows launcher for AI Novel Studio",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/main.js",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.4.2"
+  }
+}
