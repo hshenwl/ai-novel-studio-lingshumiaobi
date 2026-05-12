@@ -46,8 +46,8 @@
 
 | 类别 | 提供商 |
 |---|---|
-| 国际模型 | OpenAI (GPT-4/4o)、Anthropic (Claude 3)、Google (Gemini) |
-| 国产模型 | 通义千问、智谱 AI (GLM-4)、DeepSeek、文心一言 |
+| 国际模型 | OpenAI (GPT-5/5.5)、Anthropic (Claude 4.7)、Google (Gemini 3.1 Pro) |
+| 国产模型 | 通义千问、智谱 AI (GLM-5.1)、DeepSeek V4Pro、文心一言 |
 | 本地模型 | Ollama、LM Studio、vLLM |
 | 自定义 | 任意 OpenAI 兼容接口 |
 
@@ -202,7 +202,7 @@ ai-novel-studio/
 #### 安装
 
 ```bash
-git clone https://github.com/your-username/ai-novel-studio.git
+git clone https://github.com/hshenwl/ai-novel-studio-lingshumiaobi.git
 cd ai-novel-studio
 pnpm install
 ```
